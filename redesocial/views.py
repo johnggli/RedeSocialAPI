@@ -6,23 +6,37 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 
-class FileLoad(APIView):
+class Import(APIView):
     def post(self, request, format=None):
         profiles = request.data['users']
         posts = request.data['posts']
         comments = request.data['comments']
 
         for profile in profiles:
-            profile_s = ProfileSerializer(data=profile)
-            if profile_s.is_valid():
-                profile_s.save()
+            profile_serializer = ProfileSerializer(data=profile)
+            if profile_serializer.is_valid():
+                profile_serializer.save()
 
         for post in posts:
-            post_s = PostSerializer(data=post)
-            if post_s.is_valid():
-                post_s.save()
+            post_serializer = PostSerializer(data=post)
+            if post_serializer.is_valid():
+                post_serializer.save()
 
         for comment in comments:
-            comment_s = CommentSerializer(data=comment)
-            if comment_s.is_valid():
-                comment_s.save()
+            comment_serializer = CommentSerializer(data=comment)
+            if comment_serializer.is_valid():
+                comment_serializer.save()
+
+class ProfileView(APIView):
+    def get(self, request, format=None):
+        profiles = Profile.objects.all()
+        profile_serializer = ProfileSerializer(profiles, many=True)
+        return Response(profile_serializer.data)
+
+    def post(self, request, format=None):
+        profile = request.data
+        profile_serializer = ProfileSerializer(data=profile)
+        if profile_serializer.is_valid():
+            profile_serializer.save()
+            return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(profile_serializer.data, status=status.HTTP_400_BAD_REQUEST)
