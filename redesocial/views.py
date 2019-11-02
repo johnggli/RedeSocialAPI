@@ -25,7 +25,7 @@ class ImportJson(APIView):
             if comment_serializer.is_valid():
                 comment_serializer.save()
 
-class ProfileView(APIView):
+class ProfileList(APIView):
     def get(self, request, format=None):
         profiles = Profile.objects.all()
         profile_serializer = ProfileSerializer(profiles, many=True)
