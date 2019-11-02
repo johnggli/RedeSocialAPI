@@ -16,8 +16,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         address_data = validated_data.pop('address')
         address = Address.objects.create(**address_data)
-        profile = Profile.objects.create(address=address, **validated_data)
-        return profile
+        return Profile.objects.create(address=address, **validated_data)
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:

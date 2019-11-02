@@ -1,12 +1,10 @@
-from django.shortcuts import render
-
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from .serializers import *
 
-class Import(APIView):
+class ImportJson(APIView):
     def post(self, request, format=None):
         profiles = request.data['users']
         posts = request.data['posts']
