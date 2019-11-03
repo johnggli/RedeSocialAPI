@@ -5,6 +5,7 @@ from .models import *
 from .serializers import *
 
 from rest_framework import generics
+from rest_framework.reverse import reverse
 
 class ImportJson(APIView):
     def post(self, request, format=None):
@@ -30,7 +31,21 @@ class ImportJson(APIView):
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    name = 'profile-list'
 
 class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    name = 'profile-detail'
+
+class ProfilePostList(generics.ListCreateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfilePostSerializer
+    name = 'profile-post-list'
+
+class ApiRoot(generics.GenericAPIView):
+    def get(self, request, *args, **kwargs):
+        return Response({
+            'profile': reverse(ProfileList.name, request=request),
+            'profile-posts': reverse(ProfilePostList.name, request=request)
+        })
