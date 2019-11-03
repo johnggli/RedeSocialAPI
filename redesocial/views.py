@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 
+from rest_framework import generics
+
 class ImportJson(APIView):
     def post(self, request, format=None):
         profiles = request.data['users']
@@ -25,16 +27,10 @@ class ImportJson(APIView):
             if comment_serializer.is_valid():
                 comment_serializer.save()
 
-class ProfileList(APIView):
-    def get(self, request, format=None):
-        profiles = Profile.objects.all()
-        profile_serializer = ProfileSerializer(profiles, many=True)
-        return Response(profile_serializer.data)
+class ProfileList(generics.ListCreateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
-    def post(self, request, format=None):
-        profile = request.data
-        profile_serializer = ProfileSerializer(data=profile)
-        if profile_serializer.is_valid():
-            profile_serializer.save()
-            return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(profile_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
