@@ -38,10 +38,15 @@ class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProfileSerializer
     name = 'profile-detail'
 
-class ProfilePostList(generics.ListCreateAPIView):
+class ProfilePostList(generics.ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfilePostSerializer
     name = 'profile-post-list'
+
+class ProfilePostDetail(generics.ListAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfilePostSerializer
+    name = 'profile-post-detail'
 
 class ApiRoot(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
