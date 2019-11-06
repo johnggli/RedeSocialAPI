@@ -96,6 +96,31 @@ class CommentDetail(APIView):
         comment.delete()
         return Response(status=status.HTTP_200_OK)
 
+class ProfilePostsComments(APIView):
+
+    def get(self, request, format=None):
+        profiles = Profile.objects.all()
+        status_list = []
+        
+        for profile in profiles:
+            profile_status = {}
+            profile_posts = 0
+            post_comments = 0
+
+            for post in Post.objects.filter(userId=profile.pk):
+                profile_posts += 1
+                for comment in Comment.objects.filter(postId=post.pk):
+                    post_comments += 1
+
+            profile_status['pk'] = profile.pk
+            profile_status['name'] = profile.name
+            profile_status['total_posts'] = profile_posts
+            profile_status['total_comments'] = post_comments
+            
+            status_list.append(profile_status)
+        
+        return Response(status_list, status=status.HTTP_200_OK)
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
