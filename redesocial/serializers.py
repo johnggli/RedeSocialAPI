@@ -18,6 +18,19 @@ class ProfileSerializer(serializers.ModelSerializer):
         address = Address.objects.create(**address_data)
         return Profile.objects.create(address=address, **validated_data)
 
+    def update(self,instance,validated_data):
+        address_data = validated_data.pop('address')
+        address = instance.address
+        instance.email = validated_data.get('email', instance.email)
+        instance.name = validated_data.get('name', instance.name)
+        address.street = address_data.get('street', address.street)
+        address.suite = address_data.get('suite', address.suite)
+        address.city = address_data.get('city', address.city)
+        address.zipcode = address_data.get('zipcode', address.zipcode)
+        instance.save()
+        address.save()
+        return instance
+
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
