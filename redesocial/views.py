@@ -97,6 +97,7 @@ class CommentDetail(APIView):
         return Response(status=status.HTTP_200_OK)
 
 class ProfilePostsComments(APIView):
+    name = 'profile-posts-comments'
 
     def get(self, request, format=None):
         profiles = Profile.objects.all()
@@ -128,5 +129,6 @@ class ApiRoot(generics.GenericAPIView):
         return Response({
             'profile': reverse(ProfileList.name, request=request),
             'profile-posts': reverse(ProfilePostList.name, request=request),
-            'posts-comments': reverse(PostCommentList.name, request=request)
+            'posts-comments': reverse(PostCommentList.name, request=request),
+            'profile-posts-comments': reverse(ProfilePostsComments.name, request=request)
         })
