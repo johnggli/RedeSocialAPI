@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from redesocial.models import *
+from .models import *
+from django.contrib.auth.models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['pk', 'username', 'email']
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,17 +14,20 @@ class AddressSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     address = AddressSerializer()
-
+    
     class Meta:
         model = Profile
-        fields = ['name', 'email', 'address']
+        fields = ['pk', 'name', 'email', 'address']
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
+        user_created = User.objects.create_user(username=validated_data['name'].split()[0],
+                                                email=validated_data['email'],
+                                                password='hatsunemiku')
         address = Address.objects.create(**address_data)
-        return Profile.objects.create(address=address, **validated_data)
-
-    def update(self,instance,validated_data):
+        return Profile.objects.create(address=address, user=user_created, **validated_data)
+    
+    def update(self, instance, validated_data):
         address_data = validated_data.pop('address')
         address = instance.address
         instance.email = validated_data.get('email', instance.email)
@@ -36,6 +45,12 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['userId', 'title', 'body']
 
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.body = validated_data.get('body', instance.body)
+        instance.save()
+        return instance
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -46,7 +61,7 @@ class ProfilePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['name', 'email', 'address', 'posts']
+        fields = ['pk', 'name', 'email', 'address', 'posts']
 
 class PostCommentSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)

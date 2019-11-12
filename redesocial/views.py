@@ -10,6 +10,8 @@ from rest_framework.reverse import reverse
 from django.http import Http404
 
 class ImportJson(APIView):
+    name = 'import'
+
     def post(self, request, format=None):
         profiles = request.data['users']
         posts = request.data['posts']
@@ -26,6 +28,18 @@ class ImportJson(APIView):
         comment_serializer = CommentSerializer(data=comments, many=True)
         if comment_serializer.is_valid():
             comment_serializer.save()
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    name = "user-list"
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = UserSerializer
+    name = "user-detail"
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
@@ -127,6 +141,8 @@ class ApiRoot(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return Response({
+            'import': reverse(ImportJson.name, request=request),
+            'users': reverse(UserList.name, request=request),
             'profile': reverse(ProfileList.name, request=request),
             'profile-posts': reverse(ProfilePostList.name, request=request),
             'posts-comments': reverse(PostCommentList.name, request=request),
