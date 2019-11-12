@@ -9,6 +9,9 @@ from rest_framework.reverse import reverse
 
 from django.http import Http404
 
+from .permissions import *
+from rest_framework import permissions
+
 class ImportJson(APIView):
     name = 'import'
 
@@ -33,13 +36,13 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-list"
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Profile.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-detail"
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
