@@ -12,6 +12,7 @@ from django.http import Http404
 from .permissions import *
 from rest_framework import permissions
 
+
 class ImportJson(APIView):
     name = 'import'
 
@@ -32,12 +33,14 @@ class ImportJson(APIView):
         if comment_serializer.is_valid():
             comment_serializer.save()
 
+
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-list"
     permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
@@ -46,35 +49,54 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
+
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     name = 'profile-list'
+
 
 class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     name = 'profile-detail'
 
+
+class PostList(generics.ListCreateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    name = 'post-list'
+
+
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    name = 'post-detail'
+
+
 class ProfilePostList(generics.ListAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfilePostSerializer
     name = 'profile-post-list'
+
 
 class ProfilePostDetail(generics.RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfilePostSerializer
     name = 'profile-post-detail'
 
+
 class PostCommentList(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCommentSerializer
     name = 'post-comment-list'
     
+
 class PostCommentDetail(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCommentSerializer
     name = 'post-comment-detail'
+
 
 class CommentList(generics.ListAPIView):
     serializer_class = CommentSerializer
@@ -83,6 +105,7 @@ class CommentList(generics.ListAPIView):
     def get_queryset(self):
         post_pk = self.kwargs['pk']
         return Comment.objects.filter(postId=post_pk)
+
 
 class CommentDetail(APIView):
     name = 'comment-detail'
@@ -118,6 +141,7 @@ class CommentDetail(APIView):
         comment.delete()
         return Response(status=status.HTTP_200_OK)
 
+
 class ProfilePostsComments(APIView):
     name = 'profile-posts-comments'
 
@@ -144,6 +168,7 @@ class ProfilePostsComments(APIView):
         
         return Response(status_list, status=status.HTTP_200_OK)
 
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
@@ -152,6 +177,7 @@ class ApiRoot(generics.GenericAPIView):
             'import': reverse(ImportJson.name, request=request),
             'users': reverse(UserList.name, request=request),
             'profile': reverse(ProfileList.name, request=request),
+            'posts': reverse(PostList.name, request=request),
             'profile-posts': reverse(ProfilePostList.name, request=request),
             'posts-comments': reverse(PostCommentList.name, request=request),
             'profile-posts-comments': reverse(ProfilePostsComments.name, request=request)

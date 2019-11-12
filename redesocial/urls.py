@@ -12,6 +12,9 @@ urlpatterns = [
     path('profiles/', ProfileList.as_view(), name=ProfileList.name),
     path('profiles/<int:pk>/', ProfileDetail.as_view()),
 
+    path('posts/', PostList.as_view(), name=PostList.name),
+    path('posts/<int:pk>/', PostDetail.as_view(), name=PostDetail.name),
+
     path('profile-posts/', ProfilePostList.as_view(), name=ProfilePostList.name),
     path('profile-posts/<int:pk>/', ProfilePostDetail.as_view(), name=ProfilePostDetail.name),
 
