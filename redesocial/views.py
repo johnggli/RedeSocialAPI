@@ -61,7 +61,7 @@ class ProfilePostList(generics.ListAPIView):
     serializer_class = ProfilePostSerializer
     name = 'profile-post-list'
 
-class ProfilePostDetail(generics.ListAPIView):
+class ProfilePostDetail(generics.RetrieveAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfilePostSerializer
     name = 'profile-post-detail'
@@ -71,15 +71,18 @@ class PostCommentList(generics.ListAPIView):
     serializer_class = PostCommentSerializer
     name = 'post-comment-list'
     
-class PostCommentDetail(generics.ListAPIView):
+class PostCommentDetail(generics.RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCommentSerializer
     name = 'post-comment-detail'
 
 class CommentList(generics.ListAPIView):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     name = 'comment-list'
+
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return Comment.objects.filter(postId=post_pk)
 
 class CommentDetail(APIView):
     name = 'comment-detail'

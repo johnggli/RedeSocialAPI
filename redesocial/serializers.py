@@ -54,7 +54,7 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['postId', 'name', 'email', 'body']
+        fields = ['pk', 'postId', 'name', 'email', 'body']
 
 class ProfilePostSerializer(serializers.ModelSerializer):
     posts = PostSerializer(many=True, read_only=True)
