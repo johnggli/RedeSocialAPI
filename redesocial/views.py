@@ -36,13 +36,15 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-list"
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-detail"
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 class ProfileList(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
