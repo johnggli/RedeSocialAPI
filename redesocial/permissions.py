@@ -5,6 +5,6 @@ class IsUserOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             # Check permissions for read-only request
             return True
-        # else:
-        #     # Check permissions for write request
-        #     return obj == request.user
+        else:
+            # Check permissions for write request
+            return obj.userId.user == request.user

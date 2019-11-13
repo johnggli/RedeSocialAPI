@@ -66,12 +66,14 @@ class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     name = 'post-list'
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     name = 'post-detail'
+    permission_classes = (IsUserOrReadOnly,)
 
 
 class ProfilePostList(generics.ListAPIView):
