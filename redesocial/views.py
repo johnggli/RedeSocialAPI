@@ -12,6 +12,8 @@ from django.http import Http404
 from .permissions import *
 from rest_framework import permissions
 
+from django.shortcuts import get_object_or_404
+
 
 class ImportJson(APIView):
     name = 'import'
@@ -109,39 +111,59 @@ class CommentList(generics.ListAPIView):
         return Comment.objects.filter(postId=post_pk)
 
 
-class CommentDetail(APIView):
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CommentSerializer
     name = 'comment-detail'
+    #lookup_field = 'pk'
+    lookup_url_kwarg = 'comment_pk'
 
-    def get_comment(self, post_pk,comment_pk):
-        try:
-            post = Post.objects.get(pk=post_pk)
-            try:
-                comment =  post.comments.get(pk=comment_pk)
-                return comment
-            except Comment.DoesNotExist:
-                raise Http404
-        except Post.DoesNotExist:
-            raise Http404
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return Comment.objects.filter(postId=post_pk)
+    
+    # def get(self, *args, **kwargs):
+    #     post_pk = kwargs.get('pk', None)
+    #     comment_pk = kwargs.get('comment_pk', None)
+    #     print(post_pk)
+    #     print(comment_pk)
+    #     return super(CommentDetail, self).get(*args, **kwargs)
+    
 
-    def get(self, request, post_pk,comment_pk, format=None):
-        comment = self.get_comment(post_pk,comment_pk)
-        comment_s = CommentSerializer(comment)
-        return Response(comment_s.data)
 
-    def put(self, request, post_pk,comment_pk, format=None):
-        comment = self.get_comment(post_pk,comment_pk)
-        comment_data = request.data
-        comment_data['postId'] = post_pk
-        comment_s = CommentSerializer(comment, data=comment_data)
-        if comment_s.is_valid():
-            comment_s.save()
-            return Response(comment_s.data)
-        return Response(comment_s.errors, status=status.HTTP_400_BAD_REQUEST)
+# class CommentDetail(APIView):
+#     permission_classes = (IsOwnerOrReadOnly,)
+#     name = 'comment-detail'
 
-    def delete(self, request, post_pk,comment_pk, format=None):
-        comment = self.get_comment(post_pk,comment_pk)
-        comment.delete()
-        return Response(status=status.HTTP_200_OK)
+#     def get_comment(self, post_pk,comment_pk):
+#         try:
+#             post = Post.objects.get(pk=post_pk)
+#             try:
+#                 comment =  post.comments.get(pk=comment_pk)
+#                 return comment
+#             except Comment.DoesNotExist:
+#                 raise Http404
+#         except Post.DoesNotExist:
+#             raise Http404
+
+#     def get(self, request, post_pk,comment_pk, format=None):
+#         comment = self.get_comment(post_pk,comment_pk)
+#         comment_s = CommentSerializer(comment)
+#         return Response(comment_s.data)
+
+#     def put(self, request, post_pk,comment_pk, format=None):
+#         comment = self.get_comment(post_pk,comment_pk)
+#         comment_data = request.data
+#         comment_data['postId'] = post_pk
+#         comment_s = CommentSerializer(comment, data=comment_data)
+#         if comment_s.is_valid():
+#             comment_s.save()
+#             return Response(comment_s.data)
+#         return Response(comment_s.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request, post_pk,comment_pk, format=None):
+#         comment = self.get_comment(post_pk,comment_pk)
+#         comment.delete()
+#         return Response(status=status.HTTP_200_OK)
 
 
 class ProfilePostsComments(APIView):
