@@ -114,20 +114,12 @@ class CommentList(generics.ListAPIView):
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     name = 'comment-detail'
-    #lookup_field = 'pk'
-    lookup_url_kwarg = 'comment_pk'
+    #lookup_field = 'pk' # o padrão ja é 'pk', a nivel de Model
+    lookup_url_kwarg = 'comment_pk' # define qual URL kwarg vai ser usado no get_object, o padrão é o mesmo valor de lookup_field
 
     def get_queryset(self):
         post_pk = self.kwargs['pk']
         return Comment.objects.filter(postId=post_pk)
-    
-    # def get(self, *args, **kwargs):
-    #     post_pk = kwargs.get('pk', None)
-    #     comment_pk = kwargs.get('comment_pk', None)
-    #     print(post_pk)
-    #     print(comment_pk)
-    #     return super(CommentDetail, self).get(*args, **kwargs)
-    
 
 
 # class CommentDetail(APIView):
