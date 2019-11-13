@@ -7,12 +7,8 @@ from .serializers import *
 from rest_framework import generics
 from rest_framework.reverse import reverse
 
-from django.http import Http404
-
 from .permissions import *
 from rest_framework import permissions
-
-from django.shortcuts import get_object_or_404
 
 
 class ImportJson(APIView):
@@ -40,16 +36,17 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-list"
+
+    # Para users fica tudo somente leitura e apenas para quem estiver logado
     permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-detail"
+
     permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
-    #permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsUserOrReadOnly,)
 
 
 class ProfileList(generics.ListCreateAPIView):
@@ -68,6 +65,8 @@ class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     name = 'post-list'
+
+    # Apenas users logados podem postar
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
@@ -75,6 +74,8 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     name = 'post-detail'
+
+    # Apenas donos das postagens podem editar/excluir seus posts
     permission_classes = (IsUserOrReadOnly,)
 
 
@@ -111,51 +112,18 @@ class CommentList(generics.ListAPIView):
         return Comment.objects.filter(postId=post_pk)
 
 
-class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+class CommentDetail(generics.RetrieveDestroyAPIView):
     serializer_class = CommentSerializer
     name = 'comment-detail'
     #lookup_field = 'pk' # o padrão ja é 'pk', a nivel de Model
     lookup_url_kwarg = 'comment_pk' # define qual URL kwarg vai ser usado no get_object, o padrão é o mesmo valor de lookup_field
 
+    # Apenas os donos das postagens podem excluir comentários de suas postagens
+    permission_classes = (IsOwnerOrReadOnly,)
+
     def get_queryset(self):
         post_pk = self.kwargs['pk']
         return Comment.objects.filter(postId=post_pk)
-
-
-# class CommentDetail(APIView):
-#     permission_classes = (IsOwnerOrReadOnly,)
-#     name = 'comment-detail'
-
-#     def get_comment(self, post_pk,comment_pk):
-#         try:
-#             post = Post.objects.get(pk=post_pk)
-#             try:
-#                 comment =  post.comments.get(pk=comment_pk)
-#                 return comment
-#             except Comment.DoesNotExist:
-#                 raise Http404
-#         except Post.DoesNotExist:
-#             raise Http404
-
-#     def get(self, request, post_pk,comment_pk, format=None):
-#         comment = self.get_comment(post_pk,comment_pk)
-#         comment_s = CommentSerializer(comment)
-#         return Response(comment_s.data)
-
-#     def put(self, request, post_pk,comment_pk, format=None):
-#         comment = self.get_comment(post_pk,comment_pk)
-#         comment_data = request.data
-#         comment_data['postId'] = post_pk
-#         comment_s = CommentSerializer(comment, data=comment_data)
-#         if comment_s.is_valid():
-#             comment_s.save()
-#             return Response(comment_s.data)
-#         return Response(comment_s.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     def delete(self, request, post_pk,comment_pk, format=None):
-#         comment = self.get_comment(post_pk,comment_pk)
-#         comment.delete()
-#         return Response(status=status.HTTP_200_OK)
 
 
 class ProfilePostsComments(APIView):
