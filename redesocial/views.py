@@ -32,13 +32,14 @@ class ImportJson(APIView):
             comment_serializer.save()
 
 
-class UserList(generics.ListCreateAPIView):
+class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-list"
 
     # Para users fica tudo somente leitura e apenas para quem estiver logado
-    permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
+    #permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -46,7 +47,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     name = "user-detail"
 
-    permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
+    #permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
 
 class ProfileList(generics.ListCreateAPIView):
