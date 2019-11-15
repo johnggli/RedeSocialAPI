@@ -37,17 +37,14 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
     name = "user-list"
 
-    # Para users fica tudo somente leitura e apenas para quem estiver logado
     permission_classes = (permissions.IsAuthenticated,)
-    #permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
-
+    
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     name = "user-detail"
 
-    #permission_classes = (permissions.IsAuthenticated, IsUserOrReadOnly,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
 
@@ -68,7 +65,6 @@ class PostList(generics.ListCreateAPIView):
     serializer_class = PostSerializer
     name = 'post-list'
 
-    # Apenas users logados podem postar
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
@@ -77,8 +73,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     name = 'post-detail'
 
-    # Apenas donos das postagens podem editar/excluir seus posts
-    permission_classes = (IsUserOrReadOnly,)
+    permission_classes = (PostOwnerPermissions,)
 
 
 class ProfilePostList(generics.ListAPIView):
@@ -120,8 +115,7 @@ class CommentDetail(generics.RetrieveDestroyAPIView):
     #lookup_field = 'pk' # o padrão ja é 'pk', a nivel de Model
     lookup_url_kwarg = 'comment_pk' # define qual URL kwarg vai ser usado no get_object, o padrão é o mesmo valor de lookup_field
 
-    # Apenas os donos das postagens podem excluir comentários de suas postagens
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (CommentDeletePermission,)
 
     def get_queryset(self):
         post_pk = self.kwargs['pk']

@@ -43,7 +43,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['userId', 'title', 'body']
+        fields = ['pk', 'userId', 'title', 'body']
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)

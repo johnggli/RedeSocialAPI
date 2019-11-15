@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-class IsUserOrReadOnly(permissions.BasePermission):
+class PostOwnerPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             # Check permissions for read-only request
@@ -10,7 +10,7 @@ class IsUserOrReadOnly(permissions.BasePermission):
             return obj.userId.user == request.user
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class CommentDeletePermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
